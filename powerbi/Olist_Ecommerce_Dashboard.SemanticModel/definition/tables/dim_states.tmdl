@@ -1,0 +1,39 @@
+table dim_states
+	lineageTag: 091ec3ba-843e-4677-8613-fe258f21e8fa
+
+	column state_code
+		dataType: string
+		lineageTag: d4bdeeca-b7ab-4476-a071-29b5354374d1
+		summarizeBy: none
+		sourceColumn: state_code
+
+	column state_name
+		dataType: string
+		lineageTag: eb339b5d-7b1e-48fc-9751-45867f3abd5a
+		summarizeBy: none
+		sourceColumn: state_name
+
+	column region
+		dataType: string
+		lineageTag: 91a191c4-2be9-4c56-9753-4353c148364a
+		summarizeBy: none
+		sourceColumn: region
+
+	column map_location
+		dataType: string
+		lineageTag: 95f2e995-d8ad-45dc-9a23-8269f62e028c
+		summarizeBy: none
+		sourceColumn: map_location
+
+	partition dim_states = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_states.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"state_code", type text}, {"state_name", type text}, {"region", type text}, {"map_location", type text}}, "en-US")
+				in
+				    Typed
+

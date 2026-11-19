@@ -1,0 +1,72 @@
+table fact_payments
+	lineageTag: c9c3b93d-38cb-4591-8537-f17d931f2ebe
+
+	column order_id
+		dataType: string
+		lineageTag: 53ece25e-a35e-4056-b6b1-db4e1cb9e89a
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column payment_sequential
+		dataType: int64
+		lineageTag: 5ac33f94-9a24-43c7-a01c-f276efda48c3
+		summarizeBy: none
+		sourceColumn: payment_sequential
+
+	column payment_type
+		dataType: string
+		lineageTag: 13813848-861e-4c99-be1b-607075ad82a3
+		summarizeBy: none
+		sourceColumn: payment_type
+
+	column payment_installments
+		dataType: int64
+		lineageTag: b44c8d1f-cec8-4b48-b3fa-efcce01ec4d5
+		summarizeBy: none
+		sourceColumn: payment_installments
+
+	column payment_value
+		dataType: double
+		lineageTag: 51892a35-b2d4-489a-84e6-d1c74dc8da02
+		summarizeBy: none
+		sourceColumn: payment_value
+
+	column purchase_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 5a33f431-e204-449f-ae96-edb1c58ac4d3
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_month
+		dataType: string
+		lineageTag: 74fddf8f-7add-408a-9451-dc9a05b04493
+		summarizeBy: none
+		sourceColumn: order_month
+
+	column is_valid
+		dataType: int64
+		lineageTag: 1e2412a2-21bd-4d16-b007-029882b72173
+		summarizeBy: none
+		sourceColumn: is_valid
+
+	column in_analysis_window
+		dataType: int64
+		lineageTag: 7fe36c7a-bc30-4726-bfcb-e28fbc0f46ac
+		summarizeBy: none
+		sourceColumn: in_analysis_window
+
+	partition fact_payments = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_payments.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}, {"purchase_date", type date}, {"order_month", type text}, {"is_valid", Int64.Type}, {"in_analysis_window", Int64.Type}}, "en-US")
+				in
+				    Typed
+

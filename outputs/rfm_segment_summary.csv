@@ -1,0 +1,8 @@
+rfm_segment,customers,gmv,avg_recency,avg_gmv,pct_customers,pct_gmv
+Champions,1007,375616.87,94.24,373.01,1.06,2.39
+Loyal,1881,514641.63,298.66,273.6,1.98,3.27
+Promising High-Value,14642,4437445.51,97.67,303.06,15.41,28.2
+New / Recent,22117,1616016.13,95.7,73.07,23.28,10.27
+Needs Attention,18376,2792989.87,226.25,151.99,19.35,17.75
+At Risk High-Value,14002,4328181.62,400.86,309.11,14.74,27.51
+Lost / Hibernating,22965,1670635.4,402.22,72.75,24.18,10.62

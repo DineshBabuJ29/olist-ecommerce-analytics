@@ -1,0 +1,117 @@
+table dim_customers
+	lineageTag: fa83a2ba-06f6-4bdf-9c11-d3469b8ad3c8
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: b061b3bb-e674-4eb0-b7c8-b2f13fca3ecb
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column customer_city
+		dataType: string
+		lineageTag: 138656ca-c08d-4dc0-8889-37c3a1e05c0c
+		summarizeBy: none
+		sourceColumn: customer_city
+
+	column customer_state
+		dataType: string
+		lineageTag: b8f359d5-7766-4353-bb11-66f732b5fa41
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column first_order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: c5678119-0ae9-4b00-acbb-9674b2f9b0f8
+		summarizeBy: none
+		sourceColumn: first_order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column last_order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: b526656b-8bbc-471a-be26-d7aa3722c374
+		summarizeBy: none
+		sourceColumn: last_order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column cohort_month
+		dataType: string
+		lineageTag: 4728a5de-dc22-4663-a307-1a7e403c6f2e
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+	column cohort_month_num
+		dataType: int64
+		lineageTag: dbae5348-732d-4cdf-ad8e-e02935f0e157
+		summarizeBy: none
+		sourceColumn: cohort_month_num
+
+	column total_orders
+		dataType: int64
+		lineageTag: 38f3c0bd-68d5-414b-a924-d279decd69df
+		summarizeBy: none
+		sourceColumn: total_orders
+
+	column total_gmv
+		dataType: double
+		lineageTag: b11f06d1-4fc5-4260-aa8a-ee7e65fcec12
+		summarizeBy: none
+		sourceColumn: total_gmv
+
+	column customer_type
+		dataType: string
+		lineageTag: f1aa7e1c-3807-4147-92c2-7906a68640e6
+		summarizeBy: none
+		sourceColumn: customer_type
+
+	column recency_days
+		dataType: int64
+		lineageTag: 040fe470-a86f-4971-9ff0-29c2cda3ee8d
+		summarizeBy: none
+		sourceColumn: recency_days
+
+	column r_score
+		dataType: int64
+		lineageTag: 5b764c05-1cf6-4fff-b340-bdcf0ee0b343
+		summarizeBy: none
+		sourceColumn: r_score
+
+	column f_score
+		dataType: int64
+		lineageTag: 27b68460-1321-42e1-9a9e-f7d61c36f607
+		summarizeBy: none
+		sourceColumn: f_score
+
+	column m_score
+		dataType: int64
+		lineageTag: b2b2a643-554c-4542-ba87-41f3c658870d
+		summarizeBy: none
+		sourceColumn: m_score
+
+	column rfm_code
+		dataType: string
+		lineageTag: cfa43313-6dbf-4863-a1c2-bdb6b2892caf
+		summarizeBy: none
+		sourceColumn: rfm_code
+
+	column rfm_segment
+		dataType: string
+		lineageTag: a24b4de0-1dff-42d5-80fe-74d0bf038818
+		summarizeBy: none
+		sourceColumn: rfm_segment
+
+	partition dim_customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_customers.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"customer_unique_id", type text}, {"customer_city", type text}, {"customer_state", type text}, {"first_order_date", type date}, {"last_order_date", type date}, {"cohort_month", type text}, {"cohort_month_num", Int64.Type}, {"total_orders", Int64.Type}, {"total_gmv", type number}, {"customer_type", type text}, {"recency_days", Int64.Type}, {"r_score", Int64.Type}, {"f_score", Int64.Type}, {"m_score", Int64.Type}, {"rfm_code", type text}, {"rfm_segment", type text}}, "en-US")
+				in
+				    Typed
+

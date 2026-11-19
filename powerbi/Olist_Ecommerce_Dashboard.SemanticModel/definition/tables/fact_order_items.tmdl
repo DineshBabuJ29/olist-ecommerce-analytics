@@ -1,0 +1,132 @@
+table fact_order_items
+	lineageTag: d6b75a04-bf3c-4ea3-aec3-8f77328bed6a
+
+	column order_id
+		dataType: string
+		lineageTag: 1f1803b7-8098-455a-a615-951089780f8e
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column order_item_id
+		dataType: int64
+		lineageTag: 950a6366-18eb-49d7-a40e-6b1d54207f40
+		summarizeBy: none
+		sourceColumn: order_item_id
+
+	column product_id
+		dataType: string
+		lineageTag: 4714f28a-f4c3-4f20-bbd0-3b44b63e51fe
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column seller_id
+		dataType: string
+		lineageTag: 6e4688f3-0394-434f-acc2-09f4ec9798d1
+		summarizeBy: none
+		sourceColumn: seller_id
+
+	column price
+		dataType: double
+		lineageTag: f8a00de1-0ea9-4ad1-acc0-de0dacf36b80
+		summarizeBy: none
+		sourceColumn: price
+
+	column freight_value
+		dataType: double
+		lineageTag: 895a980e-3f60-4d8f-a15c-796b59660116
+		summarizeBy: none
+		sourceColumn: freight_value
+
+	column item_gmv
+		dataType: double
+		lineageTag: 97941e7a-9b1d-4e64-ae52-f390aaf27961
+		summarizeBy: none
+		sourceColumn: item_gmv
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: e3cc6365-b20c-4dd4-88a8-1c4b14b7eed4
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column customer_state
+		dataType: string
+		lineageTag: 13e34712-2308-4ec7-acaf-a76c3c75967f
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column purchase_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: df141bf9-647c-4086-bcf7-3bb850f39105
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_month
+		dataType: string
+		lineageTag: 467f6557-bb84-426d-80e6-a8e47eda9202
+		summarizeBy: none
+		sourceColumn: order_month
+
+	column order_month_num
+		dataType: int64
+		lineageTag: 169ab3e8-70ed-4844-8545-67eb77958984
+		summarizeBy: none
+		sourceColumn: order_month_num
+
+	column in_analysis_window
+		dataType: int64
+		lineageTag: 88968b9c-8f59-40fc-a6de-00b45415706e
+		summarizeBy: none
+		sourceColumn: in_analysis_window
+
+	column is_valid
+		dataType: int64
+		lineageTag: 2e5c3692-60b0-485a-ad31-5c2743acb58a
+		summarizeBy: none
+		sourceColumn: is_valid
+
+	column is_delivered
+		dataType: int64
+		lineageTag: 71e4de0d-4e90-4c66-876d-8719291ff574
+		summarizeBy: none
+		sourceColumn: is_delivered
+
+	column is_late
+		dataType: int64
+		lineageTag: c6e73774-2b42-4ea4-8f75-4d2742081733
+		summarizeBy: none
+		sourceColumn: is_late
+
+	column delivery_days
+		dataType: double
+		lineageTag: f6e5d4ad-1ed7-46e6-af7e-7423afb4d7b4
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+	column review_score
+		dataType: int64
+		lineageTag: 389d3b62-28f8-4fdb-9afc-cf2350dde03b
+		summarizeBy: none
+		sourceColumn: review_score
+
+	column category
+		dataType: string
+		lineageTag: 2711804f-48a4-4934-bf79-ecaa548ab746
+		summarizeBy: none
+		sourceColumn: category
+
+	partition fact_order_items = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_order_items.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"order_id", type text}, {"order_item_id", Int64.Type}, {"product_id", type text}, {"seller_id", type text}, {"price", type number}, {"freight_value", type number}, {"item_gmv", type number}, {"customer_unique_id", type text}, {"customer_state", type text}, {"purchase_date", type date}, {"order_month", type text}, {"order_month_num", Int64.Type}, {"in_analysis_window", Int64.Type}, {"is_valid", Int64.Type}, {"is_delivered", Int64.Type}, {"is_late", Int64.Type}, {"delivery_days", type number}, {"review_score", Int64.Type}, {"category", type text}}, "en-US")
+				in
+				    Typed
+

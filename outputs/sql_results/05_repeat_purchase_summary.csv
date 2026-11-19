@@ -1,0 +1,4 @@
+order_bucket,customers,pct_of_customers,gmv,pct_of_gmv,gmv_per_customer
+1 order,92102,96.96,14845268.53,94.34,161.18
+2 orders,2652,2.79,771940.06,4.91,291.08
+3+ orders,236,0.25,118318.44,0.75,501.35

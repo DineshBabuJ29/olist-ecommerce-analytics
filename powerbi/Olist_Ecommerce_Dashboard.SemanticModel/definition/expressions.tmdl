@@ -1,0 +1,5 @@
+expression DataFolder = "C:\Users\Dinesh Babu J\Downloads\Ecommerce_Analytics_Olist\data\processed\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 5f1319e5-6882-4f8d-9223-9189dc71632a
+
+	annotation PBI_ResultType = Text
+

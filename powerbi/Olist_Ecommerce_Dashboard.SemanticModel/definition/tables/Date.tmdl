@@ -1,0 +1,84 @@
+table Date
+	lineageTag: 08a8cf09-3249-455c-a74f-0507f7fd86c9
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 2a5e5332-3a1d-416c-ab38-c8c7c8f9dc08
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		lineageTag: d79db7f5-1e8a-4ff3-bc05-6701121aab56
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Quarter
+		dataType: string
+		lineageTag: b89738b6-9f58-47f7-84ce-7c1005062b87
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column 'Month Num'
+		dataType: int64
+		lineageTag: cd168638-7d78-4eda-aad2-3ffe514c0a99
+		summarizeBy: none
+		sourceColumn: Month Num
+
+	column Month
+		dataType: string
+		lineageTag: 08606722-ceaa-45e5-8a6b-9a2494fdd265
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Num'
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: f9f26a68-a5a9-4f43-b624-4957b622dcf4
+		summarizeBy: none
+		sourceColumn: Year Month
+
+	column Weekday
+		dataType: string
+		lineageTag: fae81ce4-27a3-4777-81cb-8aacba840796
+		summarizeBy: none
+		sourceColumn: Weekday
+		sortByColumn: 'Weekday Num'
+
+	column 'Weekday Num'
+		dataType: int64
+		lineageTag: b98c00d4-8bca-4a74-abc9-9229e0877532
+		summarizeBy: none
+		sourceColumn: Weekday Num
+
+	column 'In Analysis Window'
+		dataType: int64
+		lineageTag: 57625268-9553-45de-b847-b72832fe70bf
+		summarizeBy: none
+		sourceColumn: In Analysis Window
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    StartDate = #date(2016, 9, 1),
+				    EndDate = #date(2018, 10, 31),
+				    Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				    T0 = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				    T1 = Table.TransformColumnTypes(T0, {{"Date", type date}}),
+				    T2 = Table.AddColumn(T1, "Year", each Date.Year([Date]), Int64.Type),
+				    T3 = Table.AddColumn(T2, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    T4 = Table.AddColumn(T3, "Month Num", each Date.Month([Date]), Int64.Type),
+				    T5 = Table.AddColumn(T4, "Month", each Date.ToText([Date], "MMM", "en-US"), type text),
+				    T6 = Table.AddColumn(T5, "Year Month", each Date.ToText([Date], "yyyy-MM", "en-US"), type text),
+				    T7 = Table.AddColumn(T6, "Weekday", each Date.ToText([Date], "ddd", "en-US"), type text),
+				    T8 = Table.AddColumn(T7, "Weekday Num", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
+				    T9 = Table.AddColumn(T8, "In Analysis Window", each if [Date] >= #date(2017, 1, 1) and [Date] <= #date(2018, 8, 31) then 1 else 0, Int64.Type)
+				in
+				    T9
+

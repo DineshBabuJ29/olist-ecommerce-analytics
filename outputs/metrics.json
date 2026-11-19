@@ -1,0 +1,121 @@
+{
+  "raw_orders": 99441,
+  "raw_items": 112650,
+  "customers_unique": 96096,
+  "products": 32951,
+  "sellers": 3095,
+  "first_purchase": "2016-09-04",
+  "last_purchase": "2018-10-17",
+  "cleaning_issues": {
+    "delivered_before_purchase": 0,
+    "delivered_status_without_date": 8,
+    "items_non_positive_price": 0,
+    "payments_not_defined_or_zero": 9,
+    "orders_with_multiple_reviews": 551,
+    "products_without_category": 610,
+    "orders_without_items": 775,
+    "orders_without_payment": 4,
+    "orders_payment_vs_gmv_diff_gt_1": 249
+  },
+  "sql_queries_run": 32,
+  "valid_orders": 98207,
+  "gmv": 15735527.03,
+  "product_revenue": 13494400.74,
+  "aov": 160.24,
+  "avg_review": 4.12,
+  "canceled_unavailable_pct": 1.24,
+  "peak_month": "2017-11",
+  "peak_month_gmv": 1172191.68,
+  "peak_month_orders": 7423,
+  "median_month_orders": 5083.5,
+  "yoy_gmv_growth_pct": 140.4,
+  "yoy_orders_growth_pct": 137.3,
+  "busiest_weekday": "Mon",
+  "quietest_weekday": "Sat",
+  "share_orders_10_to_22h_pct": 81.6,
+  "categories_total": 74,
+  "categories_for_80pct_revenue": 18,
+  "top_category": "Health Beauty",
+  "top_category_share_pct": 9.3,
+  "top3_categories": [
+    "Health Beauty",
+    "Watches Gifts",
+    "Bed Bath Table"
+  ],
+  "top3_categories_share_pct": 25.9,
+  "highest_freight_category": "Food Drink",
+  "highest_freight_pct": 29.7,
+  "overall_freight_pct": 16.6,
+  "top_state": "Sao Paulo",
+  "top_state_share_pct": 37.4,
+  "top3_states_share_pct": 62.5,
+  "avg_freight_southeast": 22.33,
+  "avg_freight_north": 43.02,
+  "delivered_orders": 96470,
+  "avg_delivery_days": 12.6,
+  "avg_promised_days": 23.7,
+  "late_delivery_pct": 6.8,
+  "avg_review_late": 2.27,
+  "avg_review_ontime": 4.29,
+  "neg_review_pct_late": 62.4,
+  "neg_review_pct_ontime": 9.3,
+  "worst_late_state": "Alagoas",
+  "worst_late_state_pct": 21.4,
+  "best_late_state": "Parana",
+  "best_late_state_pct": 4.0,
+  "credit_card_share_pct": 75.5,
+  "boleto_share_pct": 19.9,
+  "cc_orders_with_installments_pct": 68.0,
+  "customers_with_valid_order": 94990,
+  "repeat_customer_pct": 3.04,
+  "repeat_customer_gmv_pct": 5.66,
+  "avg_month1_retention_pct": 0.46,
+  "cohorts_analysed": 20,
+  "rfm_segments": {
+    "Champions": {
+      "pct_customers": 1.1,
+      "pct_gmv": 2.4,
+      "avg_gmv": 373.01
+    },
+    "Loyal": {
+      "pct_customers": 2.0,
+      "pct_gmv": 3.3,
+      "avg_gmv": 273.6
+    },
+    "Promising High-Value": {
+      "pct_customers": 15.4,
+      "pct_gmv": 28.2,
+      "avg_gmv": 303.06
+    },
+    "New / Recent": {
+      "pct_customers": 23.3,
+      "pct_gmv": 10.3,
+      "avg_gmv": 73.07
+    },
+    "Needs Attention": {
+      "pct_customers": 19.3,
+      "pct_gmv": 17.7,
+      "avg_gmv": 151.99
+    },
+    "At Risk High-Value": {
+      "pct_customers": 14.7,
+      "pct_gmv": 27.5,
+      "avg_gmv": 309.11
+    },
+    "Lost / Hibernating": {
+      "pct_customers": 24.2,
+      "pct_gmv": 10.6,
+      "avg_gmv": 72.75
+    }
+  },
+  "test_n_late": 6381,
+  "test_n_ontime": 89443,
+  "mw_p_value": 0.0,
+  "mw_rank_biserial": 0.638,
+  "chi2_p_value": 0.0,
+  "neg_review_relative_risk": 6.74,
+  "spearman_rho": -0.235,
+  "spearman_p_value": 0.0,
+  "review_diff_ci_low": 1.98,
+  "review_diff_ci_high": 2.06
+}

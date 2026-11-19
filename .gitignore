@@ -1,0 +1,13 @@
+# Raw Kaggle data (download it yourself, see data/raw/PUT_OLIST_CSVS_HERE.md)
+data/raw/*.csv
+data/raw/*.zip
+# Kaggle download / extracted copies outside data/raw
+archive*/
+*.zip
+# Generated and large
+data/processed/*.csv
+data/olist.db
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+venv/

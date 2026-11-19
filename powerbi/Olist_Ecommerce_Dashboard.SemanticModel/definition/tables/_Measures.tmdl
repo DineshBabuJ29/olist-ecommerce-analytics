@@ -1,0 +1,299 @@
+table _Measures
+	lineageTag: 1522289d-d3dd-48c8-b758-9489928aa677
+
+	measure Orders = CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_valid] = 1 )
+		formatString: #,0
+		displayFolder: Sales
+		lineageTag: dde9f020-7ec9-4286-8dc2-039ade6203a6
+
+	measure GMV = CALCULATE ( SUM ( fact_orders[order_gmv] ), fact_orders[is_valid] = 1 )
+		formatString: "R$" #,0
+		displayFolder: Sales
+		lineageTag: c979e0ed-1cf1-46b5-9155-5fc2fc0372c5
+
+	measure 'Product Revenue' = CALCULATE ( SUM ( fact_orders[product_revenue] ), fact_orders[is_valid] = 1 )
+		formatString: "R$" #,0
+		displayFolder: Sales
+		lineageTag: fef01b67-10d8-49de-9a07-8f5a47a9e490
+
+	measure 'Freight Revenue' = CALCULATE ( SUM ( fact_orders[freight_value] ), fact_orders[is_valid] = 1 )
+		formatString: "R$" #,0
+		displayFolder: Sales
+		lineageTag: 1527b1c9-a5a2-4a86-84d8-18c12bf8c7bb
+
+	measure AOV = DIVIDE ( [GMV], [Orders] )
+		formatString: "R$" #,0.00
+		displayFolder: Sales
+		lineageTag: e952430f-8a87-4bab-ae8d-034e23416bf5
+
+	measure 'Items per Order' = DIVIDE ( CALCULATE ( SUM ( fact_orders[items_count] ), fact_orders[is_valid] = 1 ), [Orders] )
+		formatString: 0.00
+		displayFolder: Sales
+		lineageTag: 95e7a928-021d-45e2-b41e-669a87ce22e4
+
+	measure 'Cancellation Rate %' = DIVIDE ( CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_valid] = 0 ), COUNTROWS ( fact_orders ) )
+		formatString: 0.0%
+		displayFolder: Sales
+		lineageTag: 35c58261-ec84-4156-a495-9654f9a2cff7
+
+	measure Customers = CALCULATE ( DISTINCTCOUNT ( fact_orders[customer_unique_id] ), fact_orders[is_valid] = 1 )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: f72d06a9-d182-4cec-841b-3318df98a5d0
+
+	measure 'New Customers' = CALCULATE ( DISTINCTCOUNT ( fact_orders[customer_unique_id] ), fact_orders[is_valid] = 1, fact_orders[is_first_order] = 1 )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: bcc81cd3-24ba-412e-a342-9cef3df1ab57
+
+	measure 'Returning Customers' = CALCULATE ( DISTINCTCOUNT ( fact_orders[customer_unique_id] ), fact_orders[is_valid] = 1, fact_orders[is_first_order] = 0 )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: dcbc0df7-5da2-40ea-9733-1f9a1fd1fd30
+
+	measure 'Repeat Customer Rate %' = DIVIDE ( CALCULATE ( COUNTROWS ( dim_customers ), dim_customers[total_orders] >= 2 ), CALCULATE ( COUNTROWS ( dim_customers ), dim_customers[total_orders] >= 1 ) )
+		formatString: 0.00%
+		displayFolder: Customers
+		lineageTag: 4048d67e-2946-4541-afe9-340a1ae7b61f
+
+	measure 'GMV per Customer' = DIVIDE ( [GMV], [Customers] )
+		formatString: "R$" #,0.00
+		displayFolder: Customers
+		lineageTag: 7330a1e4-0184-4f25-9464-9792126e1e2a
+
+	measure 'Cohort Retention %' =
+			VAR Offset = SELECTEDVALUE ( cohort_retention[month_offset] )
+			RETURN IF ( Offset >= 1 && Offset <= 12, DIVIDE ( SUM ( cohort_retention[customers] ), MAX ( cohort_retention[cohort_size] ) ) )
+		formatString: 0.00%
+		displayFolder: Customers
+		lineageTag: 99dbbdc6-9d15-4a4a-ab56-954bff888f88
+
+	measure 'Delivered Orders' = CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_delivered] = 1 )
+		formatString: #,0
+		displayFolder: Delivery & CX
+		lineageTag: 09452969-21ae-4813-b7e5-85cc4b6da2ef
+
+	measure 'Late Orders' = CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_late] = 1 )
+		formatString: #,0
+		displayFolder: Delivery & CX
+		lineageTag: a9e5bc91-3284-4951-9e76-67b2989c4d9b
+
+	measure 'Late Delivery %' = DIVIDE ( [Late Orders], [Delivered Orders] )
+		formatString: 0.0%
+		displayFolder: Delivery & CX
+		lineageTag: b85ab168-9cb0-4379-af78-1a45e1e7fb65
+
+	measure 'Avg Delivery Days' = CALCULATE ( AVERAGE ( fact_orders[delivery_days] ), fact_orders[is_delivered] = 1 )
+		formatString: 0.0
+		displayFolder: Delivery & CX
+		lineageTag: 4f4d5980-5516-4215-9025-72251f0fea7e
+
+	measure 'Avg Promised Days' = CALCULATE ( AVERAGE ( fact_orders[estimated_days] ), fact_orders[is_delivered] = 1 )
+		formatString: 0.0
+		displayFolder: Delivery & CX
+		lineageTag: 39efe0a3-27cc-41c9-bcb5-fa3deaa89751
+
+	measure 'Avg Review Score' = CALCULATE ( AVERAGE ( fact_orders[review_score] ), fact_orders[is_valid] = 1 )
+		formatString: 0.00
+		displayFolder: Delivery & CX
+		lineageTag: 641dfe5f-13ef-4361-9500-c00345f63f92
+
+	measure 'Negative Review %' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[review_score] <= 2, NOT ISBLANK ( fact_orders[review_score] ), fact_orders[is_valid] = 1 ),
+			    CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[review_score] ), fact_orders[is_valid] = 1 )
+			)
+		formatString: 0.0%
+		displayFolder: Delivery & CX
+		lineageTag: f1f1c457-14a9-443a-9879-8f0c7556189a
+
+	measure 'Avg Review (Delivered)' = CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1 )
+		formatString: 0.00
+		displayFolder: Delivery & CX
+		lineageTag: 4c1de355-dc6b-49c8-a77b-d8da2d51e61e
+
+	measure 'Avg Review (Late)' = CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1, fact_orders[is_late] = 1 )
+		formatString: 0.00
+		displayFolder: Delivery & CX
+		lineageTag: 775be04d-c7e2-4aee-b062-4118b491f6f9
+
+	measure 'Avg Review (On Time)' = CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1, fact_orders[is_late] = 0 )
+		formatString: 0.00
+		displayFolder: Delivery & CX
+		lineageTag: 645d02c5-292d-41b8-8616-599d6e2fcab7
+
+	measure 'Review Gap Late vs On Time' = [Avg Review (On Time)] - [Avg Review (Late)]
+		formatString: 0.00
+		displayFolder: Delivery & CX
+		lineageTag: c3ce3e5e-fd28-45f6-8b99-c6aaa2d820ba
+
+	measure 'Insight Late Reviews' = "Late orders average " & FORMAT ( [Avg Review (Late)], "0.00" ) & " stars vs " & FORMAT ( [Avg Review (On Time)], "0.00" ) & " for on-time orders"
+		displayFolder: Delivery & CX
+		lineageTag: 081b8764-bba8-43c0-8b1b-6c8aaa81cc84
+
+	measure 'GMV PM' = CALCULATE ( [GMV], DATEADD ( 'Date'[Date], -1, MONTH ) )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 598358be-6cb3-417d-938a-e91888499f12
+
+	measure 'GMV MoM %' = DIVIDE ( [GMV] - [GMV PM], [GMV PM] )
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 1770de1b-0cff-400c-9b2e-c3060613e5c5
+
+	measure 'GMV PY' = CALCULATE ( [GMV], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 0b3495b6-3966-425c-8e77-99b96ba785fb
+
+	measure 'GMV YoY %' = DIVIDE ( [GMV] - [GMV PY], [GMV PY] )
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: c0a97c6e-586f-469d-92b9-bcaa7ee30a16
+
+	measure 'GMV YTD' = TOTALYTD ( [GMV], 'Date'[Date] )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 6ab1989c-9e55-445f-8db2-f6b500e15df8
+
+	measure 'GMV 3M Moving Avg' =
+			VAR Months =
+			    CALCULATETABLE ( VALUES ( 'Date'[Year Month] ), DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -3, MONTH ) )
+			RETURN
+			    AVERAGEX ( Months, VAR ym = 'Date'[Year Month] RETURN CALCULATE ( [GMV], REMOVEFILTERS ( 'Date' ), 'Date'[Year Month] = ym ) )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 31341a81-6e40-4e65-b193-fc39e7328b5d
+
+	measure 'Orders PY' = CALCULATE ( [Orders], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: b0e49661-8619-4b57-a8e8-d445375268e5
+
+	measure 'Orders YoY %' = DIVIDE ( [Orders] - [Orders PY], [Orders PY] )
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: ec10de96-b841-4f1b-8ef7-52eec121dc02
+
+	measure 'GMV (Trend)' = IF ( MAX ( 'Date'[In Analysis Window] ) = 1, [GMV] )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 777be8dc-829b-45cb-98e5-443039dc735e
+
+	measure 'Orders (Trend)' = IF ( MAX ( 'Date'[In Analysis Window] ) = 1, [Orders] )
+		formatString: #,0
+		displayFolder: Time Intelligence
+		lineageTag: bb698e0f-9c26-46b7-851d-123c27c0ce65
+
+	measure 'GMV 3M Moving Avg (Trend)' = IF ( MAX ( 'Date'[In Analysis Window] ) = 1, [GMV 3M Moving Avg] )
+		formatString: "R$" #,0
+		displayFolder: Time Intelligence
+		lineageTag: 7bd84eae-40f5-497b-874a-61201f59ec17
+
+	measure 'Late Delivery % (Trend)' = IF ( MAX ( 'Date'[In Analysis Window] ) = 1, [Late Delivery %] )
+		formatString: 0.0%
+		displayFolder: Time Intelligence
+		lineageTag: f66fcd62-fbd1-4f7a-a148-81984b14058e
+
+	measure 'Avg Review Score (Trend)' = IF ( MAX ( 'Date'[In Analysis Window] ) = 1, [Avg Review Score] )
+		formatString: 0.00
+		displayFolder: Time Intelligence
+		lineageTag: a80164cd-8e42-4dbd-9630-cf2dc3c0e65a
+
+	measure 'Item Revenue' = CALCULATE ( SUM ( fact_order_items[price] ), fact_order_items[is_valid] = 1 )
+		formatString: "R$" #,0
+		displayFolder: Product & Seller
+		lineageTag: 900b4148-fc48-4c0e-bfaf-4a8c1b67c954
+
+	measure 'Item Freight' = CALCULATE ( SUM ( fact_order_items[freight_value] ), fact_order_items[is_valid] = 1 )
+		formatString: "R$" #,0
+		displayFolder: Product & Seller
+		lineageTag: 9e2de8fa-10a0-4cb6-88e7-5ecf6c502ca7
+
+	measure 'Items Sold' = CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_valid] = 1 )
+		formatString: #,0
+		displayFolder: Product & Seller
+		lineageTag: ca801314-2953-4447-bc52-b5b409c5c038
+
+	measure 'Item Orders' = CALCULATE ( DISTINCTCOUNT ( fact_order_items[order_id] ), fact_order_items[is_valid] = 1 )
+		formatString: #,0
+		displayFolder: Product & Seller
+		lineageTag: 5ae1abf9-fe48-460b-a21e-42d9ad8e026e
+
+	measure 'Freight to Price %' = DIVIDE ( [Item Freight], [Item Revenue] )
+		formatString: 0.0%
+		displayFolder: Product & Seller
+		lineageTag: f7082a06-8185-47a2-86f2-ce596fc7538e
+
+	measure 'Item Avg Review' = CALCULATE ( AVERAGE ( fact_order_items[review_score] ), fact_order_items[is_valid] = 1 )
+		formatString: 0.00
+		displayFolder: Product & Seller
+		lineageTag: dc148f59-1ef1-42a9-8372-82141dd1ad12
+
+	measure 'Item Late Delivery %' = DIVIDE ( CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_late] = 1 ), CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_delivered] = 1 ) )
+		formatString: 0.0%
+		displayFolder: Product & Seller
+		lineageTag: 5c84eff8-0d65-4ae4-99dd-6ce50d69e375
+
+	measure 'Category Rank' =
+			IF (
+			    HASONEVALUE ( dim_products[category] ) && NOT ISBLANK ( [Item Revenue] ),
+			    RANKX ( ALLSELECTED ( dim_products[category] ), [Item Revenue], , DESC, DENSE )
+			)
+		formatString: 0
+		displayFolder: Product & Seller
+		lineageTag: 47ef8ace-7d5e-4a35-9622-368ec0f98888
+
+	measure 'Category Share %' = DIVIDE ( [Item Revenue], CALCULATE ( [Item Revenue], ALLSELECTED ( dim_products[category] ) ) )
+		formatString: 0.0%
+		displayFolder: Product & Seller
+		lineageTag: 3bf6a19f-f0cd-46da-8255-e9b88849a5a6
+
+	measure 'Category Cumulative %' =
+			VAR CurrentRevenue = [Item Revenue]
+			VAR Categories = ADDCOLUMNS ( ALLSELECTED ( dim_products[category] ), "@rev", [Item Revenue] )
+			VAR Cumulative = SUMX ( FILTER ( Categories, [@rev] >= CurrentRevenue ), [@rev] )
+			RETURN IF ( NOT ISBLANK ( CurrentRevenue ), DIVIDE ( Cumulative, SUMX ( Categories, [@rev] ) ) )
+		formatString: 0.0%
+		displayFolder: Product & Seller
+		lineageTag: b182ad0e-730b-4cf1-8c91-4f79fb26123d
+
+	measure 'Item Revenue Top 10' = IF ( [Category Rank] <= 10, [Item Revenue] )
+		formatString: "R$" #,0
+		displayFolder: Product & Seller
+		lineageTag: d01bbe60-ba60-48a1-9696-b98ec4245abe
+
+	measure 'Item Revenue Top 20' = IF ( [Category Rank] <= 20, [Item Revenue] )
+		formatString: "R$" #,0
+		displayFolder: Product & Seller
+		lineageTag: 6071819c-f120-46bc-aef4-160927e7b3dc
+
+	measure 'Category Cumulative % Top 20' = IF ( [Category Rank] <= 20, [Category Cumulative %] )
+		formatString: 0.0%
+		displayFolder: Product & Seller
+		lineageTag: 779b0504-808c-4ee3-b436-af6fa76a09b6
+
+	measure 'Active Sellers' = CALCULATE ( DISTINCTCOUNT ( fact_order_items[seller_id] ), fact_order_items[is_valid] = 1 )
+		formatString: #,0
+		displayFolder: Product & Seller
+		lineageTag: 0dde294c-1f44-4f63-8add-3bc06d2397e0
+
+	measure 'Seller CX Flag' = IF ( NOT HASONEVALUE ( dim_sellers[seller_id] ) || ISBLANK ( [Item Revenue] ), BLANK (), IF ( [Item Avg Review] < 3.5 || [Item Late Delivery %] > 0.15, "Review", "OK" ) )
+		displayFolder: Product & Seller
+		lineageTag: 2b3e4029-3220-40b8-bc58-67d41a54d8d5
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: 99ecc4ff-837c-4fb6-ac77-b02838789e34
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Source = #table(type table [Placeholder = text], {})
+				in
+				    Source
+

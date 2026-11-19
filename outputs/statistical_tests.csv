@@ -1,0 +1,4 @@
+hypothesis,test,statistic,p_value,effect_size,effect_measure,result
+H1 late orders get lower review scores,Mann-Whitney U (one-sided),103305546.0,0.0,0.638,rank-biserial r,Reject H0
+H2 negative-review share depends on lateness,Chi-square test of independence,15064.1,0.0,6.74,relative risk of a 1-2 star review (late / on-time),Reject H0
+H3 longer delivery -> lower review,Spearman rank correlation,-0.235,0.0,-0.235,Spearman rho,Reject H0

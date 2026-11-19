@@ -1,0 +1,222 @@
+table fact_orders
+	lineageTag: 30b51bec-f3a4-4cdc-83af-9a9c94bacc09
+
+	column order_id
+		dataType: string
+		lineageTag: 6a2f7a7e-76f0-47d5-a7a1-15e74fc4044f
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column order_status
+		dataType: string
+		lineageTag: abb25785-e94c-4ce8-9ff2-8c078b900b41
+		summarizeBy: none
+		sourceColumn: order_status
+
+	column order_purchase_timestamp
+		dataType: dateTime
+		lineageTag: 0b2c52a8-4e51-4681-8b8b-71feca11efe3
+		summarizeBy: none
+		sourceColumn: order_purchase_timestamp
+
+	column order_estimated_delivery_date
+		dataType: dateTime
+		lineageTag: 79b2755b-2390-4e9c-a962-6806860b1bce
+		summarizeBy: none
+		sourceColumn: order_estimated_delivery_date
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: e340615d-1dd3-4a3d-a5d2-1fa545a4d36a
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column customer_city
+		dataType: string
+		lineageTag: e55b7d28-658d-48bb-ae3d-6c934eed5663
+		summarizeBy: none
+		sourceColumn: customer_city
+
+	column customer_state
+		dataType: string
+		lineageTag: 6e59ce45-664d-4e0d-a841-02b5386942bf
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column is_valid
+		dataType: int64
+		lineageTag: 1fd98d36-d68e-427c-9aae-30c48ebd9eeb
+		summarizeBy: none
+		sourceColumn: is_valid
+
+	column is_delivered
+		dataType: int64
+		lineageTag: c96ed7a2-09cd-4d56-8420-fb9b582b7aff
+		summarizeBy: none
+		sourceColumn: is_delivered
+
+	column delivery_days
+		dataType: double
+		lineageTag: b2d6f708-0a04-469a-bef9-b6aba44ae165
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+	column estimated_days
+		dataType: double
+		lineageTag: 98efb126-ff2f-4f53-ab31-ba4917019048
+		summarizeBy: none
+		sourceColumn: estimated_days
+
+	column delay_days
+		dataType: int64
+		lineageTag: c85412f9-0cfd-4cf6-ab37-a88f3ad74825
+		summarizeBy: none
+		sourceColumn: delay_days
+
+	column is_late
+		dataType: int64
+		lineageTag: 0afdfdfb-4024-4063-a4b3-844f42e06a14
+		summarizeBy: none
+		sourceColumn: is_late
+
+	column delay_bucket
+		dataType: string
+		lineageTag: 3e9fe638-2b4e-49f7-bdfd-9e43979edfff
+		summarizeBy: none
+		sourceColumn: delay_bucket
+
+	column purchase_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 5321ddb8-86eb-4e88-8021-69747af54132
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_year
+		dataType: int64
+		lineageTag: 749dc689-298a-4fa8-9619-35b2a157e7f6
+		summarizeBy: none
+		sourceColumn: order_year
+
+	column order_month
+		dataType: string
+		lineageTag: 9613bd79-7214-4b6e-96c9-23db2f83b05c
+		summarizeBy: none
+		sourceColumn: order_month
+
+	column order_month_num
+		dataType: int64
+		lineageTag: f0790e24-ed4e-4496-846f-c57545c7e45e
+		summarizeBy: none
+		sourceColumn: order_month_num
+
+	column purchase_day_num
+		dataType: int64
+		lineageTag: 4fc72623-bd0c-4749-9d6a-4dfd1ae9e05a
+		summarizeBy: none
+		sourceColumn: purchase_day_num
+
+	column order_weekday
+		dataType: string
+		lineageTag: bb8d7c7f-e6df-4ce9-bcff-1020fbafe245
+		summarizeBy: none
+		sourceColumn: order_weekday
+
+	column order_weekday_num
+		dataType: int64
+		lineageTag: a1f0e64f-0811-42bf-822d-c63bca2e876e
+		summarizeBy: none
+		sourceColumn: order_weekday_num
+
+	column order_hour
+		dataType: int64
+		lineageTag: dac72845-5e48-464d-8cc4-c30cb2adbd3d
+		summarizeBy: none
+		sourceColumn: order_hour
+
+	column in_analysis_window
+		dataType: int64
+		lineageTag: caf2cc58-5457-45cf-835d-c14786c3775b
+		summarizeBy: none
+		sourceColumn: in_analysis_window
+
+	column items_count
+		dataType: int64
+		lineageTag: d7f2a659-9b59-4aeb-a08d-21ed1d8040d0
+		summarizeBy: none
+		sourceColumn: items_count
+
+	column sellers_count
+		dataType: int64
+		lineageTag: f1469178-3cae-42c8-90fc-959c2fc88c9c
+		summarizeBy: none
+		sourceColumn: sellers_count
+
+	column product_revenue
+		dataType: double
+		lineageTag: 8a2458a8-0d18-416d-9c0d-d3bf69eedbc9
+		summarizeBy: none
+		sourceColumn: product_revenue
+
+	column freight_value
+		dataType: double
+		lineageTag: 88087463-b6d8-4544-bb45-8db987cd489f
+		summarizeBy: none
+		sourceColumn: freight_value
+
+	column order_gmv
+		dataType: double
+		lineageTag: 6037ddda-cc2d-49d2-892f-225474f38a44
+		summarizeBy: none
+		sourceColumn: order_gmv
+
+	column payment_value
+		dataType: double
+		lineageTag: f86d2b29-dfed-4c0a-a32d-7b59844757f6
+		summarizeBy: none
+		sourceColumn: payment_value
+
+	column max_installments
+		dataType: int64
+		lineageTag: 9e27410e-9979-4104-8893-b46f46838f78
+		summarizeBy: none
+		sourceColumn: max_installments
+
+	column main_payment_type
+		dataType: string
+		lineageTag: ecf1ee93-e053-4981-a7db-a65fa4bcda75
+		summarizeBy: none
+		sourceColumn: main_payment_type
+
+	column review_score
+		dataType: int64
+		lineageTag: b10f9c47-456a-4416-8564-685790822cf0
+		summarizeBy: none
+		sourceColumn: review_score
+
+	column has_comment
+		dataType: int64
+		lineageTag: 9851a6e5-e163-4155-a094-265b17606c10
+		summarizeBy: none
+		sourceColumn: has_comment
+
+	column is_first_order
+		dataType: int64
+		lineageTag: b9380d90-1645-40a1-805c-fb02889e79f3
+		summarizeBy: none
+		sourceColumn: is_first_order
+
+	partition fact_orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"order_id", type text}, {"order_status", type text}, {"order_purchase_timestamp", type datetime}, {"order_estimated_delivery_date", type datetime}, {"customer_unique_id", type text}, {"customer_city", type text}, {"customer_state", type text}, {"is_valid", Int64.Type}, {"is_delivered", Int64.Type}, {"delivery_days", type number}, {"estimated_days", type number}, {"delay_days", Int64.Type}, {"is_late", Int64.Type}, {"delay_bucket", type text}, {"purchase_date", type date}, {"order_year", Int64.Type}, {"order_month", type text}, {"order_month_num", Int64.Type}, {"purchase_day_num", Int64.Type}, {"order_weekday", type text}, {"order_weekday_num", Int64.Type}, {"order_hour", Int64.Type}, {"in_analysis_window", Int64.Type}, {"items_count", Int64.Type}, {"sellers_count", Int64.Type}, {"product_revenue", type number}, {"freight_value", type number}, {"order_gmv", type number}, {"payment_value", type number}, {"max_installments", Int64.Type}, {"main_payment_type", type text}, {"review_score", Int64.Type}, {"has_comment", Int64.Type}, {"is_first_order", Int64.Type}}, "en-US")
+				in
+				    Typed
+

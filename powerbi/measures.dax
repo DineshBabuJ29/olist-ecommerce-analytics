@@ -1,0 +1,220 @@
+// =====================================================================
+// DAX MEASURES - Olist E-Commerce Dashboard
+// Create a blank table called _Measures (Home > Enter data > OK) and add
+// each measure to it (Modeling > New measure). Paste one block at a time.
+// Display folders (Model view > Properties) keep them tidy:
+//   Sales | Customers | Delivery & CX | Time Intelligence | Product & Seller
+// =====================================================================
+
+
+// ------------------------------------------------------------ SALES
+Orders =
+CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_valid] = 1 )
+
+GMV =
+CALCULATE ( SUM ( fact_orders[order_gmv] ), fact_orders[is_valid] = 1 )
+
+Product Revenue =
+CALCULATE ( SUM ( fact_orders[product_revenue] ), fact_orders[is_valid] = 1 )
+
+Freight Revenue =
+CALCULATE ( SUM ( fact_orders[freight_value] ), fact_orders[is_valid] = 1 )
+
+AOV =
+DIVIDE ( [GMV], [Orders] )
+
+Items per Order =
+DIVIDE (
+    CALCULATE ( SUM ( fact_orders[items_count] ), fact_orders[is_valid] = 1 ),
+    [Orders]
+)
+
+Cancellation Rate % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_valid] = 0 ),
+    COUNTROWS ( fact_orders )
+)
+
+
+// ------------------------------------------------------------ CUSTOMERS
+Customers =
+CALCULATE ( DISTINCTCOUNT ( fact_orders[customer_unique_id] ), fact_orders[is_valid] = 1 )
+
+New Customers =
+CALCULATE (
+    DISTINCTCOUNT ( fact_orders[customer_unique_id] ),
+    fact_orders[is_valid] = 1,
+    fact_orders[is_first_order] = 1
+)
+
+Returning Customers =
+// customers who placed a repeat (not-first) order in the selected period
+CALCULATE (
+    DISTINCTCOUNT ( fact_orders[customer_unique_id] ),
+    fact_orders[is_valid] = 1,
+    fact_orders[is_first_order] = 0
+)
+
+Repeat Customer Rate % =
+// share of customers (lifetime) who placed 2+ valid orders
+DIVIDE (
+    CALCULATE ( COUNTROWS ( dim_customers ), dim_customers[total_orders] >= 2 ),
+    CALCULATE ( COUNTROWS ( dim_customers ), dim_customers[total_orders] >= 1 )
+)
+
+GMV per Customer =
+DIVIDE ( [GMV], [Customers] )
+
+// For the cohort heat-map (matrix: rows = cohort_month, columns = month_offset)
+Cohort Retention % =
+DIVIDE ( SUM ( cohort_retention[customers] ), MAX ( cohort_retention[cohort_size] ) )
+
+
+// ------------------------------------------------------------ DELIVERY & CX
+Delivered Orders =
+CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_delivered] = 1 )
+
+Late Orders =
+CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[is_late] = 1 )
+
+Late Delivery % =
+DIVIDE ( [Late Orders], [Delivered Orders] )
+
+Avg Delivery Days =
+CALCULATE ( AVERAGE ( fact_orders[delivery_days] ), fact_orders[is_delivered] = 1 )
+
+Avg Promised Days =
+CALCULATE ( AVERAGE ( fact_orders[estimated_days] ), fact_orders[is_delivered] = 1 )
+
+Avg Review Score =
+CALCULATE ( AVERAGE ( fact_orders[review_score] ), fact_orders[is_valid] = 1 )
+
+Negative Review % =
+// share of reviewed orders that got 1 or 2 stars
+DIVIDE (
+    // NOT ISBLANK matters: in DAX, BLANK <= 2 is TRUE
+    CALCULATE ( COUNTROWS ( fact_orders ), fact_orders[review_score] <= 2,
+                NOT ISBLANK ( fact_orders[review_score] ), fact_orders[is_valid] = 1 ),
+    CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[review_score] ), fact_orders[is_valid] = 1 )
+)
+
+// is_delivered = 1 matters: in DAX, BLANK = 0 is TRUE, so undelivered
+// orders (is_late is blank) would otherwise count as "on time"
+Avg Review (Delivered) =
+CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1 )
+
+Avg Review (Late) =
+CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1, fact_orders[is_late] = 1 )
+
+Avg Review (On Time) =
+CALCULATE ( [Avg Review Score], fact_orders[is_delivered] = 1, fact_orders[is_late] = 0 )
+
+Review Gap Late vs On Time =
+[Avg Review (On Time)] - [Avg Review (Late)]
+
+
+// ------------------------------------------------------------ TIME INTELLIGENCE
+// Needs the 'Date' table (see POWERBI_BUILD_GUIDE.md) marked as a date table.
+GMV PM =
+CALCULATE ( [GMV], DATEADD ( 'Date'[Date], -1, MONTH ) )
+
+GMV MoM % =
+DIVIDE ( [GMV] - [GMV PM], [GMV PM] )
+
+GMV PY =
+CALCULATE ( [GMV], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+GMV YoY % =
+DIVIDE ( [GMV] - [GMV PY], [GMV PY] )
+
+GMV YTD =
+TOTALYTD ( [GMV], 'Date'[Date] )
+
+GMV 3M Moving Avg =
+// average monthly GMV over the current month and the two before it
+VAR Months =
+    CALCULATETABLE (
+        VALUES ( 'Date'[Year Month] ),
+        DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -3, MONTH )
+    )
+RETURN
+    AVERAGEX (
+        Months,
+        VAR ym = 'Date'[Year Month]
+        RETURN CALCULATE ( [GMV], REMOVEFILTERS ( 'Date' ), 'Date'[Year Month] = ym )
+    )
+
+Orders PY =
+CALCULATE ( [Orders], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+Orders YoY % =
+DIVIDE ( [Orders] - [Orders PY], [Orders PY] )
+
+
+// ------------------------------------------------------------ PRODUCT & SELLER
+// Use these on product / seller visuals: they read fact_order_items,
+// which is the table that dim_products and dim_sellers filter.
+Item Revenue =
+CALCULATE ( SUM ( fact_order_items[price] ), fact_order_items[is_valid] = 1 )
+
+Item Freight =
+CALCULATE ( SUM ( fact_order_items[freight_value] ), fact_order_items[is_valid] = 1 )
+
+Items Sold =
+CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_valid] = 1 )
+
+Item Orders =
+CALCULATE ( DISTINCTCOUNT ( fact_order_items[order_id] ), fact_order_items[is_valid] = 1 )
+
+Freight to Price % =
+DIVIDE ( [Item Freight], [Item Revenue] )
+
+Item Avg Review =
+CALCULATE ( AVERAGE ( fact_order_items[review_score] ), fact_order_items[is_valid] = 1 )
+
+Item Late Delivery % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_late] = 1 ),
+    CALCULATE ( COUNTROWS ( fact_order_items ), fact_order_items[is_delivered] = 1 )
+)
+
+Category Rank =
+// HASONEVALUE: rank single category rows only, not the Total row
+IF (
+    HASONEVALUE ( dim_products[category] ) && NOT ISBLANK ( [Item Revenue] ),
+    RANKX ( ALLSELECTED ( dim_products[category] ), [Item Revenue], , DESC, DENSE )
+)
+
+Category Share % =
+DIVIDE ( [Item Revenue], CALCULATE ( [Item Revenue], ALLSELECTED ( dim_products[category] ) ) )
+
+Category Cumulative % =
+// Pareto line: revenue of this category + all categories that sell more
+VAR CurrentRevenue = [Item Revenue]
+VAR Categories =
+    ADDCOLUMNS ( ALLSELECTED ( dim_products[category] ), "@rev", [Item Revenue] )
+VAR Cumulative =
+    SUMX ( FILTER ( Categories, [@rev] >= CurrentRevenue ), [@rev] )
+RETURN
+    DIVIDE ( Cumulative, SUMX ( Categories, [@rev] ) )
+
+Active Sellers =
+CALCULATE ( DISTINCTCOUNT ( fact_order_items[seller_id] ), fact_order_items[is_valid] = 1 )
+
+Seller CX Flag =
+// shown in the seller table; conditional formatting turns "Review" red
+IF (
+    NOT HASONEVALUE ( dim_sellers[seller_id] ) || ISBLANK ( [Item Revenue] ),
+    BLANK (),
+    IF ( [Item Avg Review] < 3.5 || [Item Late Delivery %] > 0.15, "Review", "OK" )
+)
+
+
+// ------------------------------------------------------------ DYNAMIC TITLES
+Title Overview =
+"E-commerce performance | " & FORMAT ( MIN ( 'Date'[Date] ), "MMM yyyy" ) & " - "
+    & FORMAT ( MAX ( 'Date'[Date] ), "MMM yyyy" )
+
+Insight Late Reviews =
+"Late orders average " & FORMAT ( [Avg Review (Late)], "0.00" ) & " stars vs "
+    & FORMAT ( [Avg Review (On Time)], "0.00" ) & " on time"

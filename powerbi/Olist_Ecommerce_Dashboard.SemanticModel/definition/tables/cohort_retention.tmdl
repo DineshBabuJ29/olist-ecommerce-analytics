@@ -1,0 +1,45 @@
+table cohort_retention
+	lineageTag: 12de3f2e-e008-4705-8da9-163f63249e0f
+
+	column cohort_month
+		dataType: string
+		lineageTag: 58ea73a0-0951-45c5-ae0a-ffe72f5f9ad4
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+	column month_offset
+		dataType: int64
+		lineageTag: 6a76ef0a-1165-4d81-acea-af779c4b72fa
+		summarizeBy: none
+		sourceColumn: month_offset
+
+	column customers
+		dataType: int64
+		lineageTag: d3450744-7af1-4546-9d44-56598b3d856c
+		summarizeBy: none
+		sourceColumn: customers
+
+	column cohort_size
+		dataType: int64
+		lineageTag: 00dd5a27-f614-485d-8bb2-575f62055d3e
+		summarizeBy: none
+		sourceColumn: cohort_size
+
+	column retention_pct
+		dataType: double
+		lineageTag: 9806f46b-c8fe-42dd-9630-22e1460bd1d7
+		summarizeBy: none
+		sourceColumn: retention_pct
+
+	partition cohort_retention = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "cohort_retention.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"cohort_month", type text}, {"month_offset", Int64.Type}, {"customers", Int64.Type}, {"cohort_size", Int64.Type}, {"retention_pct", type number}}, "en-US")
+				in
+				    Typed
+

@@ -1,0 +1,63 @@
+table dim_products
+	lineageTag: c510f853-42b0-4498-b7c7-db0c0aec5e32
+
+	column product_id
+		dataType: string
+		lineageTag: 1e2dfd6c-2bc6-4a0f-8d1e-aa8f4ab0a2c4
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column category
+		dataType: string
+		lineageTag: 39430972-d01d-47d7-a0f2-a6807c5ce54d
+		summarizeBy: none
+		sourceColumn: category
+
+	column category_portuguese
+		dataType: string
+		lineageTag: 13d98948-6c38-4fc2-9297-5edfc70e7edd
+		summarizeBy: none
+		sourceColumn: category_portuguese
+
+	column product_photos_qty
+		dataType: int64
+		lineageTag: 7414f130-901e-421c-bb46-0881e81a23f7
+		summarizeBy: none
+		sourceColumn: product_photos_qty
+
+	column product_weight_g
+		dataType: int64
+		lineageTag: c1ea5b43-5627-4a6e-8e67-a36ba59d7e22
+		summarizeBy: none
+		sourceColumn: product_weight_g
+
+	column product_length_cm
+		dataType: int64
+		lineageTag: 28cd325d-0d30-46d9-98cc-71f63853e086
+		summarizeBy: none
+		sourceColumn: product_length_cm
+
+	column product_height_cm
+		dataType: int64
+		lineageTag: 24bd089d-fe5b-4b06-91e6-861218ba410d
+		summarizeBy: none
+		sourceColumn: product_height_cm
+
+	column product_width_cm
+		dataType: int64
+		lineageTag: 2d9a092f-9f01-4eec-8fe5-993e4020884e
+		summarizeBy: none
+		sourceColumn: product_width_cm
+
+	partition dim_products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_products.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    // empty CSV cells -> null, so numeric columns convert cleanly
+				    Blanks = Table.TransformColumns(Promoted, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"product_id", type text}, {"category", type text}, {"category_portuguese", type text}, {"product_photos_qty", Int64.Type}, {"product_weight_g", Int64.Type}, {"product_length_cm", Int64.Type}, {"product_height_cm", Int64.Type}, {"product_width_cm", Int64.Type}}, "en-US")
+				in
+				    Typed
+

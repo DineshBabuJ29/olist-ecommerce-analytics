@@ -1,0 +1,8 @@
+segment,customers,pct_customers,gmv,pct_gmv,avg_recency_days,avg_orders,avg_gmv
+Promising High-Value,14686,15.46,4451017.86,28.29,97.0,1.0,303.08
+At Risk High-Value,13959,14.7,4316172.24,27.43,400.0,1.0,309.2
+Needs Attention,18379,19.35,2792513.44,17.75,225.0,1.0,151.96
+Lost / Hibernating,23011,24.22,1671855.12,10.62,401.0,1.0,72.67
+New / Recent,22067,23.23,1613709.87,10.26,94.0,1.0,73.13
+Loyal,1874,1.97,513068.29,3.26,298.0,2.07,273.78
+Champions,1014,1.07,377190.21,2.4,94.0,2.19,371.98
